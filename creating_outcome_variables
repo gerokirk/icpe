@@ -1,0 +1,27 @@
+/* method 1*/
+proc sort bam2013;
+by npi_num drug_name;
+run;
+
+proc means data=bam2013a;
+var bene_count_ge65 total_claim_count_ge_65 total_day_supply_ge65;
+by npi_num drug_name;
+output out=sum_by_provider mean sum sd;
+run;
+
+/*method 2*/
+
+proc sql;
+   title 'Total First Quarter Sales';
+   by npi_num drug_name;
+   select sum(bene_count_ge65)  as overall_sum_bene,
+          sum(total_claim_count_ge_65) as overall_claim,
+          sum(total_day_supply_ge65)    as overall_day_supply,
+      from bam2013;
+ run;
+ 
+ /* primary outcome */
+ 
+ data bata2013b;
+ set bam2013a;
+ by npi_num drug_name;
