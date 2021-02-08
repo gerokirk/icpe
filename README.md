@@ -475,7 +475,540 @@ set long.PartD_Prescriber_PUF_NPI_Drug_17;
 	 time=4;
 	 format time studytime.;
 run;
-/*code to remove datasets from working memory to speed up processes*/
 
-# icpe
-ICPE Abstract and Manuscript
+data bam2014a;
+	set bam2014;
+if 		
+		specialty_description='Orthopaedic Surgery'|
+		specialty_description='Orthopedic Surgery'|
+		specialty_description='Gynecological/Oncology' |
+		specialty_description='Obstetrics/Gynecology' |
+		specialty_description='Urology' |
+		specialty_description='Rheumatology' |
+		specialty_description='Endocrinology'|
+		specialty_description='Osteopathic Manipulative Medicine' |	
+		specialty_description='Physical Medicine and Rehabilitation'|
+		specialty_description='Hematology/Oncology' |
+		specialty_description='Medical Oncology' |
+		specialty_description='Radiation Oncology' |
+		specialty_description='Pulmonary Disease' |
+		specialty_description='Nephrology'|		
+		specialty_description='Specialist'|
+		specialty_description='Gastroenterology'	
+then 	group=4;
+else if specialty_description='Physician Assistant' 
+then 	group=3;
+else if specialty_description='Licensed Practical Nurse'|
+		specialty_description='Certified Clinical Nurse Specialist' |
+		specialty_description='Certified Nurse Midwife'| 
+		specialty_description='Registered Nurse'|
+		specialty_description='Nurse Practitioner'
+then	group=2;
+else if specialty_description='Geriatric Medicine' 
+then	group=1;
+else if specialty_description='Family Medicine' |
+		specialty_description='Family Practice' |
+		specialty_description='General Practice'|
+		specialty_description='Internal Medicine'|
+		specialty_description='Preventive Medicine'|
+		specialty_description='Emergency Medicine'|
+		specialty_description='General Surgery' 	
+then 	group=0;
+else group=. ;
+if group=. then delete;
+if 
+	drug_name='ACTIVELLA'|
+	generic_name='ESTRADIOL/NORETHINDRONE ACET'|
+	drug_name='ALORA'|generic_name='ESTRADIOL'| 
+	drug_name='ALOSETRON HCL'|
+	generic_name='ALOSETRON HCL'|
+	drug_name='AMABELZ'|
+	generic_name= 'ESTRADIOL/NORETHINDRONE ACET' |
+	drug_name='CLIMARA'|	
+	drug_name='CLIMARA PRO'|
+	generic_name='ESTRADIOL/LEVONORGESTREL'|
+	drug_name='DUAVEE'|	
+	generic_name='ESTROGENS,CONJ/BAZEDOXIFENE'|
+	drug_name='ESTRADIOL*'|
+	generic_name='ESTRADIOL/LEVONORGESTREL'	|
+	drug_name='CYSTADANE'	|
+	generic_name='BETAINE'|	
+	drug_name='DUAVEE'	|
+	generic_name='ESTROGENS,CONJ/BAZEDOXIFENE'|
+	drug_name='ESTRADIOL-NORETHINDRONE ACETAT'|
+	generic_name='ESTRADIOL/NORETHINDRONE ACET'|
+	drug_name='ESTROPIPATE'|generic_name='ESTROPIPATE'|
+	drug_name='FEMHRT'	|generic_name='NORETHINDRONE AC-ETH ESTRADIOL'|
+	drug_name='FYAVOLV'	|drug_name='LOPREEZA'|	generic_name='ESTRADIOL/NORETHINDRONE ACET'|
+	drug_name='MENEST'|	generic_name='ESTROGENS,ESTERIFIED'|
+	drug_name='MENOSTAR	'|drug_name='MIMVEY'	|drug_name='MIMVEY LO'|	drug_name='MINIVELLE'|	
+	drug_name='NORETHINDRON-ETHINYL ESTRADIOL'|
+	drug_name='PREFEST'|generic_name='ESTRADIOL/NORGESTIMATE'	|
+	drug_name='PREMARIN*'	|generic_name='ESTROGENS, CONJUGATED'	|
+	drug_name='PREMPHASE'|	generic_name='ESTROGEN,CON/M-PROGEST ACET'	|
+	drug_name='PREMPRO'|drug_name='VIVELLE-DOT'		
+then use=1;
+else if 
+drug_name='ACTONEL'	|generic_name='RISEDRONATE SODIUM'|
+drug_name='ALENDRONATE SODIUM'|	generic_name='ALENDRONATE SODIUM'|	
+drug_name='ATELVIA'	|drug_name='BINOSTO'|	drug_name='BONIVA*'|generic_name='IBANDRONATE SODIUM'|	
+drug_name='CALCITONIN-SALMON'|	generic_name='CALCITONIN,SALMON,SYNTHETIC'|	
+drug_name='EVISTA'|	generic_name='RALOXIFENE HCL'|
+drug_name='FORTEO'	|generic_name='TERIPARATIDE'|	
+drug_name='FORTICAL'|	drug_name='FOSAMAX PLUS D'	|generic_name='ALENDRONATE SODIUM/VITAMIN D3'|	
+drug_name='IBANDRONATE SODIUM*'|	drug_name='MIACALCIN*'|drug_name='PROLIA' |generic_name='DENOSUMAB'|	
+drug_name='RALOXIFENE HCL'|	generic_name='RALOXIFENE HCL'|	
+drug_name='RECLAST'|	generic_name='ZOLEDRONIC ACID/MANNITOL-WATER'	|
+drug_name='RISEDRONATE SODIUM'	|	drug_name='RISEDRONATE SODIUM DR'|	drug_name='TYMLOS'| generic_name='ABALOPARATIDE'|	
+drug_name='VITAMIN D2'|	generic_name='ERGOCALCIFEROL (VITAMIN D2)'|	
+drug_name='ZOLEDRONIC ACID'|	generic_name='ZOLEDRONIC ACID/MANNITOL-WATER' then use=2;
+else use=0;
+if  
+	generic_name='RISEDRONATE SODIUM'|
+	generic_name='ALENDRONATE SODIUM'|
+	generic_name='IBANDRONATE SODIUM'| 
+	generic_name='TERIPARATIDE'|
+	generic_name='ALENDRONATE SODIUM/VITAMIN D3'|
+	generic_name='ZOLEDRONIC ACID/MANNITOL-WATER'
+		then type=1;
+else if	generic_name='CALCITONIN,SALMON,SYNTHETIC'|	generic_name='ABALOPARATIDE' then	type=2;
+else if	generic_name='RALOXIFENE HCL' then type=3;
+else if  generic_name='DENOSUMAB' then type=4;
+else if generic_name='ERGOCALCIFEROL (VITAMIN D2)' then type=5;
+else type=0;
+if use=1|use=0 then nonbam_total_claims=total_claim_count;
+else nonbam_total_claims=.;
+if use=2 then bam_total_claims=total_claim_count;
+else bam_total_claims=.;
+if use=. then delete;
+run;
+
+data bam2013;
+	set bam2013_2;
+if 		
+		specialty_description='Orthopaedic Surgery'|
+		specialty_description='Orthopedic Surgery'|
+		specialty_description='Gynecological/Oncology' |
+		specialty_description='Obstetrics/Gynecology' |
+		specialty_description='Urology' |
+		specialty_description='Rheumatology' |
+		specialty_description='Endocrinology'|
+		specialty_description='Osteopathic Manipulative Medicine' |	
+		specialty_description='Physical Medicine and Rehabilitation'|
+		specialty_description='Hematology/Oncology' |
+		specialty_description='Medical Oncology' |
+		specialty_description='Radiation Oncology' |
+		specialty_description='Pulmonary Disease' |
+		specialty_description='Nephrology'|		
+		specialty_description='Specialist'|
+		specialty_description='Gastroenterology'	
+then 	group=4;
+else if specialty_description='Physician Assistant' 
+then 	group=3;
+else if specialty_description='Licensed Practical Nurse'|
+		specialty_description='Certified Clinical Nurse Specialist' |
+		specialty_description='Certified Nurse Midwife'| 
+		specialty_description='Registered Nurse'|
+		specialty_description='Nurse Practitioner'
+then	group=2;
+else if specialty_description='Geriatric Medicine' 
+then	group=1;
+else if specialty_description='Family Medicine' |
+		specialty_description='Family Practice' |
+		specialty_description='General Practice'|
+		specialty_description='Internal Medicine'|
+		specialty_description='Preventive Medicine'|
+		specialty_description='Emergency Medicine'|
+		specialty_description='General Surgery' 	
+then 	group=0;
+else group=. ;
+if group=. then delete;
+if 
+	drug_name='ACTIVELLA'|
+	generic_name='ESTRADIOL/NORETHINDRONE ACET'|
+	drug_name='ALORA'|generic_name='ESTRADIOL'| 
+	drug_name='ALOSETRON HCL'|
+	generic_name='ALOSETRON HCL'|
+	drug_name='AMABELZ'|
+	generic_name= 'ESTRADIOL/NORETHINDRONE ACET' |
+	drug_name='CLIMARA'|	
+	drug_name='CLIMARA PRO'|
+	generic_name='ESTRADIOL/LEVONORGESTREL'|
+	drug_name='DUAVEE'|	
+	generic_name='ESTROGENS,CONJ/BAZEDOXIFENE'|
+	drug_name='ESTRADIOL*'|
+	generic_name='ESTRADIOL/LEVONORGESTREL'	|
+	drug_name='CYSTADANE'	|
+	generic_name='BETAINE'|	
+	drug_name='DUAVEE'	|
+	generic_name='ESTROGENS,CONJ/BAZEDOXIFENE'|
+	drug_name='ESTRADIOL-NORETHINDRONE ACETAT'|
+	generic_name='ESTRADIOL/NORETHINDRONE ACET'|
+	drug_name='ESTROPIPATE'|generic_name='ESTROPIPATE'|
+	drug_name='FEMHRT'	|generic_name='NORETHINDRONE AC-ETH ESTRADIOL'|
+	drug_name='FYAVOLV'	|drug_name='LOPREEZA'|	generic_name='ESTRADIOL/NORETHINDRONE ACET'|
+	drug_name='MENEST'|	generic_name='ESTROGENS,ESTERIFIED'|
+	drug_name='MENOSTAR	'|drug_name='MIMVEY'	|drug_name='MIMVEY LO'|	drug_name='MINIVELLE'|	
+	drug_name='NORETHINDRON-ETHINYL ESTRADIOL'|
+	drug_name='PREFEST'|generic_name='ESTRADIOL/NORGESTIMATE'	|
+	drug_name='PREMARIN*'	|generic_name='ESTROGENS, CONJUGATED'	|
+	drug_name='PREMPHASE'|	generic_name='ESTROGEN,CON/M-PROGEST ACET'	|
+	drug_name='PREMPRO'|drug_name='VIVELLE-DOT'		
+then use=1;
+else if 
+drug_name='ACTONEL'	|generic_name='RISEDRONATE SODIUM'|
+drug_name='ALENDRONATE SODIUM'|	generic_name='ALENDRONATE SODIUM'|	
+drug_name='ATELVIA'	|drug_name='BINOSTO'|	drug_name='BONIVA*'|generic_name='IBANDRONATE SODIUM'|	
+drug_name='CALCITONIN-SALMON'|	generic_name='CALCITONIN,SALMON,SYNTHETIC'|	
+drug_name='EVISTA'|	generic_name='RALOXIFENE HCL'|
+drug_name='FORTEO'	|generic_name='TERIPARATIDE'|	
+drug_name='FORTICAL'|	drug_name='FOSAMAX PLUS D'	|generic_name='ALENDRONATE SODIUM/VITAMIN D3'|	
+drug_name='IBANDRONATE SODIUM*'|	drug_name='MIACALCIN*'|drug_name='PROLIA' |generic_name='DENOSUMAB'|	
+drug_name='RALOXIFENE HCL'|	generic_name='RALOXIFENE HCL'|	
+drug_name='RECLAST'|	generic_name='ZOLEDRONIC ACID/MANNITOL-WATER'	|
+drug_name='RISEDRONATE SODIUM'	|	drug_name='RISEDRONATE SODIUM DR'|	drug_name='TYMLOS'| generic_name='ABALOPARATIDE'|	
+drug_name='VITAMIN D2'|	generic_name='ERGOCALCIFEROL (VITAMIN D2)'|	
+drug_name='ZOLEDRONIC ACID'|	generic_name='ZOLEDRONIC ACID/MANNITOL-WATER' then use=2;
+else use=0;
+if  
+	generic_name='RISEDRONATE SODIUM'|
+	generic_name='ALENDRONATE SODIUM'|
+	generic_name='IBANDRONATE SODIUM'| 
+	generic_name='TERIPARATIDE'|
+	generic_name='ALENDRONATE SODIUM/VITAMIN D3'|
+	generic_name='ZOLEDRONIC ACID/MANNITOL-WATER'
+		then type=1;
+else if	generic_name='CALCITONIN,SALMON,SYNTHETIC'|	generic_name='ABALOPARATIDE' then	type=2;
+else if	generic_name='RALOXIFENE HCL' then type=3;
+else if  generic_name='DENOSUMAB' then type=4;
+else if generic_name='ERGOCALCIFEROL (VITAMIN D2)' then type=5;
+else type=0;
+if use=1|use=0 then nonbam_total_claims=total_claim_count;
+else nonbam_total_claims=.;
+if use=2 then bam_total_claims=total_claim_count;
+else bam_total_claims=.;
+if use=. then delete;
+run;
+
+
+data bam2015a;
+	set bam2015;
+if 		
+		specialty_description='Orthopaedic Surgery'|
+		specialty_description='Orthopedic Surgery'|
+		specialty_description='Gynecological/Oncology' |
+		specialty_description='Obstetrics/Gynecology' |
+		specialty_description='Urology' |
+		specialty_description='Rheumatology' |
+		specialty_description='Endocrinology'|
+		specialty_description='Osteopathic Manipulative Medicine' |	
+		specialty_description='Physical Medicine and Rehabilitation'|
+		specialty_description='Hematology/Oncology' |
+		specialty_description='Medical Oncology' |
+		specialty_description='Radiation Oncology' |
+		specialty_description='Pulmonary Disease' |
+		specialty_description='Nephrology'|		
+		specialty_description='Specialist'|
+		specialty_description='Gastroenterology'	
+then 	group=4;
+else if specialty_description='Physician Assistant' 
+then 	group=3;
+else if specialty_description='Licensed Practical Nurse'|
+		specialty_description='Certified Clinical Nurse Specialist' |
+		specialty_description='Certified Nurse Midwife'| 
+		specialty_description='Registered Nurse'|
+		specialty_description='Nurse Practitioner'
+then	group=2;
+else if specialty_description='Geriatric Medicine' 
+then	group=1;
+else if specialty_description='Family Medicine' |
+		specialty_description='Family Practice' |
+		specialty_description='General Practice'|
+		specialty_description='Internal Medicine'|
+		specialty_description='Preventive Medicine'|
+		specialty_description='Emergency Medicine'|
+		specialty_description='General Surgery' 	
+then 	group=0;
+else group=. ;
+if group=. then delete;
+if 
+	drug_name='ACTIVELLA'|
+	generic_name='ESTRADIOL/NORETHINDRONE ACET'|
+	drug_name='ALORA'|generic_name='ESTRADIOL'| 
+	drug_name='ALOSETRON HCL'|
+	generic_name='ALOSETRON HCL'|
+	drug_name='AMABELZ'|
+	generic_name= 'ESTRADIOL/NORETHINDRONE ACET' |
+	drug_name='CLIMARA'|	
+	drug_name='CLIMARA PRO'|
+	generic_name='ESTRADIOL/LEVONORGESTREL'|
+	drug_name='DUAVEE'|	
+	generic_name='ESTROGENS,CONJ/BAZEDOXIFENE'|
+	drug_name='ESTRADIOL*'|
+	generic_name='ESTRADIOL/LEVONORGESTREL'	|
+	drug_name='CYSTADANE'	|
+	generic_name='BETAINE'|	
+	drug_name='DUAVEE'	|
+	generic_name='ESTROGENS,CONJ/BAZEDOXIFENE'|
+	drug_name='ESTRADIOL-NORETHINDRONE ACETAT'|
+	generic_name='ESTRADIOL/NORETHINDRONE ACET'|
+	drug_name='ESTROPIPATE'|generic_name='ESTROPIPATE'|
+	drug_name='FEMHRT'	|generic_name='NORETHINDRONE AC-ETH ESTRADIOL'|
+	drug_name='FYAVOLV'	|drug_name='LOPREEZA'|	generic_name='ESTRADIOL/NORETHINDRONE ACET'|
+	drug_name='MENEST'|	generic_name='ESTROGENS,ESTERIFIED'|
+	drug_name='MENOSTAR	'|drug_name='MIMVEY'	|drug_name='MIMVEY LO'|	drug_name='MINIVELLE'|	
+	drug_name='NORETHINDRON-ETHINYL ESTRADIOL'|
+	drug_name='PREFEST'|generic_name='ESTRADIOL/NORGESTIMATE'	|
+	drug_name='PREMARIN*'	|generic_name='ESTROGENS, CONJUGATED'	|
+	drug_name='PREMPHASE'|	generic_name='ESTROGEN,CON/M-PROGEST ACET'	|
+	drug_name='PREMPRO'|drug_name='VIVELLE-DOT'		
+then use=1;
+else if 
+drug_name='ACTONEL'	|generic_name='RISEDRONATE SODIUM'|
+drug_name='ALENDRONATE SODIUM'|	generic_name='ALENDRONATE SODIUM'|	
+drug_name='ATELVIA'	|drug_name='BINOSTO'|	drug_name='BONIVA*'|generic_name='IBANDRONATE SODIUM'|	
+drug_name='CALCITONIN-SALMON'|	generic_name='CALCITONIN,SALMON,SYNTHETIC'|	
+drug_name='EVISTA'|	generic_name='RALOXIFENE HCL'|
+drug_name='FORTEO'	|generic_name='TERIPARATIDE'|	
+drug_name='FORTICAL'|	drug_name='FOSAMAX PLUS D'	|generic_name='ALENDRONATE SODIUM/VITAMIN D3'|	
+drug_name='IBANDRONATE SODIUM*'|	drug_name='MIACALCIN*'|drug_name='PROLIA' |generic_name='DENOSUMAB'|	
+drug_name='RALOXIFENE HCL'|	generic_name='RALOXIFENE HCL'|	
+drug_name='RECLAST'|	generic_name='ZOLEDRONIC ACID/MANNITOL-WATER'	|
+drug_name='RISEDRONATE SODIUM'	|	drug_name='RISEDRONATE SODIUM DR'|	drug_name='TYMLOS'| generic_name='ABALOPARATIDE'|	
+drug_name='VITAMIN D2'|	generic_name='ERGOCALCIFEROL (VITAMIN D2)'|	
+drug_name='ZOLEDRONIC ACID'|	generic_name='ZOLEDRONIC ACID/MANNITOL-WATER' then use=2;
+else use=0;
+if  
+	generic_name='RISEDRONATE SODIUM'|
+	generic_name='ALENDRONATE SODIUM'|
+	generic_name='IBANDRONATE SODIUM'| 
+	generic_name='TERIPARATIDE'|
+	generic_name='ALENDRONATE SODIUM/VITAMIN D3'|
+	generic_name='ZOLEDRONIC ACID/MANNITOL-WATER'
+		then type=1;
+else if	generic_name='CALCITONIN,SALMON,SYNTHETIC'|	generic_name='ABALOPARATIDE' then	type=2;
+else if	generic_name='RALOXIFENE HCL' then type=3;
+else if  generic_name='DENOSUMAB' then type=4;
+else if generic_name='ERGOCALCIFEROL (VITAMIN D2)' then type=5;
+else type=0;
+if use=1|use=0 then nonbam_total_claims=total_claim_count;
+else nonbam_total_claims=.;
+if use=2 then bam_total_claims=total_claim_count;
+else bam_total_claims=.;
+if use=. then delete;
+run;
+
+data bam2016a;
+	set bam2016;
+if 		
+		specialty_description='Orthopaedic Surgery'|
+		specialty_description='Orthopedic Surgery'|
+		specialty_description='Gynecological/Oncology' |
+		specialty_description='Obstetrics/Gynecology' |
+		specialty_description='Urology' |
+		specialty_description='Rheumatology' |
+		specialty_description='Endocrinology'|
+		specialty_description='Osteopathic Manipulative Medicine' |	
+		specialty_description='Physical Medicine and Rehabilitation'|
+		specialty_description='Hematology/Oncology' |
+		specialty_description='Medical Oncology' |
+		specialty_description='Radiation Oncology' |
+		specialty_description='Pulmonary Disease' |
+		specialty_description='Nephrology'|		
+		specialty_description='Specialist'|
+		specialty_description='Gastroenterology'	
+then 	group=4;
+else if specialty_description='Physician Assistant' 
+then 	group=3;
+else if specialty_description='Licensed Practical Nurse'|
+		specialty_description='Certified Clinical Nurse Specialist' |
+		specialty_description='Certified Nurse Midwife'| 
+		specialty_description='Registered Nurse'|
+		specialty_description='Nurse Practitioner'
+then	group=2;
+else if specialty_description='Geriatric Medicine' 
+then	group=1;
+else if specialty_description='Family Medicine' |
+		specialty_description='Family Practice' |
+		specialty_description='General Practice'|
+		specialty_description='Internal Medicine'|
+		specialty_description='Preventive Medicine'|
+		specialty_description='Emergency Medicine'|
+		specialty_description='General Surgery' 	
+then 	group=0;
+else group=. ;
+if group=. then delete;
+if 
+	drug_name='ACTIVELLA'|
+	generic_name='ESTRADIOL/NORETHINDRONE ACET'|
+	drug_name='ALORA'|generic_name='ESTRADIOL'| 
+	drug_name='ALOSETRON HCL'|
+	generic_name='ALOSETRON HCL'|
+	drug_name='AMABELZ'|
+	generic_name= 'ESTRADIOL/NORETHINDRONE ACET' |
+	drug_name='CLIMARA'|	
+	drug_name='CLIMARA PRO'|
+	generic_name='ESTRADIOL/LEVONORGESTREL'|
+	drug_name='DUAVEE'|	
+	generic_name='ESTROGENS,CONJ/BAZEDOXIFENE'|
+	drug_name='ESTRADIOL*'|
+	generic_name='ESTRADIOL/LEVONORGESTREL'	|
+	drug_name='CYSTADANE'	|
+	generic_name='BETAINE'|	
+	drug_name='DUAVEE'	|
+	generic_name='ESTROGENS,CONJ/BAZEDOXIFENE'|
+	drug_name='ESTRADIOL-NORETHINDRONE ACETAT'|
+	generic_name='ESTRADIOL/NORETHINDRONE ACET'|
+	drug_name='ESTROPIPATE'|generic_name='ESTROPIPATE'|
+	drug_name='FEMHRT'	|generic_name='NORETHINDRONE AC-ETH ESTRADIOL'|
+	drug_name='FYAVOLV'	|drug_name='LOPREEZA'|	generic_name='ESTRADIOL/NORETHINDRONE ACET'|
+	drug_name='MENEST'|	generic_name='ESTROGENS,ESTERIFIED'|
+	drug_name='MENOSTAR	'|drug_name='MIMVEY'	|drug_name='MIMVEY LO'|	drug_name='MINIVELLE'|	
+	drug_name='NORETHINDRON-ETHINYL ESTRADIOL'|
+	drug_name='PREFEST'|generic_name='ESTRADIOL/NORGESTIMATE'	|
+	drug_name='PREMARIN*'	|generic_name='ESTROGENS, CONJUGATED'	|
+	drug_name='PREMPHASE'|	generic_name='ESTROGEN,CON/M-PROGEST ACET'	|
+	drug_name='PREMPRO'|drug_name='VIVELLE-DOT'		
+then use=1;
+else if 
+drug_name='ACTONEL'	|generic_name='RISEDRONATE SODIUM'|
+drug_name='ALENDRONATE SODIUM'|	generic_name='ALENDRONATE SODIUM'|	
+drug_name='ATELVIA'	|drug_name='BINOSTO'|	drug_name='BONIVA*'|generic_name='IBANDRONATE SODIUM'|	
+drug_name='CALCITONIN-SALMON'|	generic_name='CALCITONIN,SALMON,SYNTHETIC'|	
+drug_name='EVISTA'|	generic_name='RALOXIFENE HCL'|
+drug_name='FORTEO'	|generic_name='TERIPARATIDE'|	
+drug_name='FORTICAL'|	drug_name='FOSAMAX PLUS D'	|generic_name='ALENDRONATE SODIUM/VITAMIN D3'|	
+drug_name='IBANDRONATE SODIUM*'|	drug_name='MIACALCIN*'|drug_name='PROLIA' |generic_name='DENOSUMAB'|	
+drug_name='RALOXIFENE HCL'|	generic_name='RALOXIFENE HCL'|	
+drug_name='RECLAST'|	generic_name='ZOLEDRONIC ACID/MANNITOL-WATER'	|
+drug_name='RISEDRONATE SODIUM'	|	drug_name='RISEDRONATE SODIUM DR'|	drug_name='TYMLOS'| generic_name='ABALOPARATIDE'|	
+drug_name='VITAMIN D2'|	generic_name='ERGOCALCIFEROL (VITAMIN D2)'|	
+drug_name='ZOLEDRONIC ACID'|	generic_name='ZOLEDRONIC ACID/MANNITOL-WATER' then use=2;
+else use=0;
+if  
+	generic_name='RISEDRONATE SODIUM'|
+	generic_name='ALENDRONATE SODIUM'|
+	generic_name='IBANDRONATE SODIUM'| 
+	generic_name='TERIPARATIDE'|
+	generic_name='ALENDRONATE SODIUM/VITAMIN D3'|
+	generic_name='ZOLEDRONIC ACID/MANNITOL-WATER'
+		then type=1;
+else if	generic_name='CALCITONIN,SALMON,SYNTHETIC'|	generic_name='ABALOPARATIDE' then	type=2;
+else if	generic_name='RALOXIFENE HCL' then type=3;
+else if  generic_name='DENOSUMAB' then type=4;
+else if generic_name='ERGOCALCIFEROL (VITAMIN D2)' then type=5;
+else type=0;
+if use=1|use=0 then nonbam_total_claims=total_claim_count;
+else nonbam_total_claims=.;
+if use=2 then bam_total_claims=total_claim_count;
+else bam_total_claims=.;
+if use=. then delete;
+run;
+
+
+data bam2017a;
+	set bam2017;
+if 		
+		specialty_description='Orthopaedic Surgery'|
+		specialty_description='Orthopedic Surgery'|
+		specialty_description='Gynecological/Oncology' |
+		specialty_description='Obstetrics/Gynecology' |
+		specialty_description='Urology' |
+		specialty_description='Rheumatology' |
+		specialty_description='Endocrinology'|
+		specialty_description='Osteopathic Manipulative Medicine' |	
+		specialty_description='Physical Medicine and Rehabilitation'|
+		specialty_description='Hematology/Oncology' |
+		specialty_description='Medical Oncology' |
+		specialty_description='Radiation Oncology' |
+		specialty_description='Pulmonary Disease' |
+		specialty_description='Nephrology'|		
+		specialty_description='Specialist'|
+		specialty_description='Gastroenterology'	
+then 	group=4;
+else if specialty_description='Physician Assistant' 
+then 	group=3;
+else if specialty_description='Licensed Practical Nurse'|
+		specialty_description='Certified Clinical Nurse Specialist' |
+		specialty_description='Certified Nurse Midwife'| 
+		specialty_description='Registered Nurse'|
+		specialty_description='Nurse Practitioner'
+then	group=2;
+else if specialty_description='Geriatric Medicine' 
+then	group=1;
+else if specialty_description='Family Medicine' |
+		specialty_description='Family Practice' |
+		specialty_description='General Practice'|
+		specialty_description='Internal Medicine'|
+		specialty_description='Preventive Medicine'|
+		specialty_description='Emergency Medicine'|
+		specialty_description='General Surgery' 	
+then 	group=0;
+else group=. ;
+if group=. then delete;
+if 
+	drug_name='ACTIVELLA'|
+	generic_name='ESTRADIOL/NORETHINDRONE ACET'|
+	drug_name='ALORA'|generic_name='ESTRADIOL'| 
+	drug_name='ALOSETRON HCL'|
+	generic_name='ALOSETRON HCL'|
+	drug_name='AMABELZ'|
+	generic_name= 'ESTRADIOL/NORETHINDRONE ACET' |
+	drug_name='CLIMARA'|	
+	drug_name='CLIMARA PRO'|
+	generic_name='ESTRADIOL/LEVONORGESTREL'|
+	drug_name='DUAVEE'|	
+	generic_name='ESTROGENS,CONJ/BAZEDOXIFENE'|
+	drug_name='ESTRADIOL*'|
+	generic_name='ESTRADIOL/LEVONORGESTREL'	|
+	drug_name='CYSTADANE'	|
+	generic_name='BETAINE'|	
+	drug_name='DUAVEE'	|
+	generic_name='ESTROGENS,CONJ/BAZEDOXIFENE'|
+	drug_name='ESTRADIOL-NORETHINDRONE ACETAT'|
+	generic_name='ESTRADIOL/NORETHINDRONE ACET'|
+	drug_name='ESTROPIPATE'|generic_name='ESTROPIPATE'|
+	drug_name='FEMHRT'	|generic_name='NORETHINDRONE AC-ETH ESTRADIOL'|
+	drug_name='FYAVOLV'	|drug_name='LOPREEZA'|	generic_name='ESTRADIOL/NORETHINDRONE ACET'|
+	drug_name='MENEST'|	generic_name='ESTROGENS,ESTERIFIED'|
+	drug_name='MENOSTAR	'|drug_name='MIMVEY'	|drug_name='MIMVEY LO'|	drug_name='MINIVELLE'|	
+	drug_name='NORETHINDRON-ETHINYL ESTRADIOL'|
+	drug_name='PREFEST'|generic_name='ESTRADIOL/NORGESTIMATE'	|
+	drug_name='PREMARIN*'	|generic_name='ESTROGENS, CONJUGATED'	|
+	drug_name='PREMPHASE'|	generic_name='ESTROGEN,CON/M-PROGEST ACET'	|
+	drug_name='PREMPRO'|drug_name='VIVELLE-DOT'		
+then use=1;
+else if 
+drug_name='ACTONEL'	|generic_name='RISEDRONATE SODIUM'|
+drug_name='ALENDRONATE SODIUM'|	generic_name='ALENDRONATE SODIUM'|	
+drug_name='ATELVIA'	|drug_name='BINOSTO'|	drug_name='BONIVA*'|generic_name='IBANDRONATE SODIUM'|	
+drug_name='CALCITONIN-SALMON'|	generic_name='CALCITONIN,SALMON,SYNTHETIC'|	
+drug_name='EVISTA'|	generic_name='RALOXIFENE HCL'|
+drug_name='FORTEO'	|generic_name='TERIPARATIDE'|	
+drug_name='FORTICAL'|	drug_name='FOSAMAX PLUS D'	|generic_name='ALENDRONATE SODIUM/VITAMIN D3'|	
+drug_name='IBANDRONATE SODIUM*'|	drug_name='MIACALCIN*'|drug_name='PROLIA' |generic_name='DENOSUMAB'|	
+drug_name='RALOXIFENE HCL'|	generic_name='RALOXIFENE HCL'|	
+drug_name='RECLAST'|	generic_name='ZOLEDRONIC ACID/MANNITOL-WATER'	|
+drug_name='RISEDRONATE SODIUM'	|	drug_name='RISEDRONATE SODIUM DR'|	drug_name='TYMLOS'| generic_name='ABALOPARATIDE'|	
+drug_name='VITAMIN D2'|	generic_name='ERGOCALCIFEROL (VITAMIN D2)'|	
+drug_name='ZOLEDRONIC ACID'|	generic_name='ZOLEDRONIC ACID/MANNITOL-WATER' then use=2;
+else use=0;
+if  
+	generic_name='RISEDRONATE SODIUM'|
+	generic_name='ALENDRONATE SODIUM'|
+	generic_name='IBANDRONATE SODIUM'| 
+	generic_name='TERIPARATIDE'|
+	generic_name='ALENDRONATE SODIUM/VITAMIN D3'|
+	generic_name='ZOLEDRONIC ACID/MANNITOL-WATER'
+		then type=1;
+else if	generic_name='CALCITONIN,SALMON,SYNTHETIC'|	generic_name='ABALOPARATIDE' then	type=2;
+else if	generic_name='RALOXIFENE HCL' then type=3;
+else if  generic_name='DENOSUMAB' then type=4;
+else if generic_name='ERGOCALCIFEROL (VITAMIN D2)' then type=5;
+else type=0;
+if use=1|use=0 then nonbam_total_claims=total_claim_count;
+else nonbam_total_claims=.;
+if use=2 then bam_total_claims=total_claim_count;
+else bam_total_claims=.;
+if use=. then delete;
+run;
